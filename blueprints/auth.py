@@ -3,8 +3,8 @@ from Services.spotify_oauth import sp_oauth
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/')
-def login():
+@auth_bp.route('/login')
+def login():    
     auth_url = sp_oauth.get_authorize_url() #login di spotify
     return redirect(auth_url)
 
@@ -18,4 +18,4 @@ def callback():
 @auth_bp.route('/logout')
 def logout():
     session.clear() #cancelliamo l'access token salvato in session
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('home.home'))

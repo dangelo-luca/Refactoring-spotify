@@ -15,3 +15,12 @@ sp_oauth = SpotifyOAuth(
 
 def get_spotify_object(token_info):
     return spotipy.Spotify(auth=token_info['access_token'])
+
+def authenticate_user():
+    auth_url = sp_oauth.get_authorize_url()
+    print(f"Visita questo URL per autenticarti: {auth_url}")
+    response = input("Inserisci l'URL di reindirizzamento dopo l'autenticazione: ")
+    code = sp_oauth.parse_response_code(response)
+    token_info = sp_oauth.get_access_token(code)
+    return token_info
+

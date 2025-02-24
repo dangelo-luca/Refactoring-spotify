@@ -3,16 +3,21 @@ from Services.spotify_oauth import get_spotify_object
 import spotipy
 
 home_bp = Blueprint('home', __name__)
-@home_bp.route('/home')
+
+
+@home_bp.route('/')
 def home():
-    token_info = session.get('token_info') #recupero token sissione (salvato prima)
-    if not token_info:
-        return redirect(url_for('auth.login'))
-    sp = get_spotify_object(token_info) #usiamo il token per ottenere i dati del profilo
-    user_info = sp.current_user()
-    print(user_info) #capiamo la struttura di user_info per usarle nel frontend
-    playlists = sp.current_user_playlists()['items'] #sempre tramite il token sp preso prima
-    return render_template('home.html', user_info=user_info, playlists=playlists) #passo le info utente all'home.html
+    token_info = session.get('token_info')
+    if token_info:  
+        spotify = get_spotify_object(token_info)
+        sp = get_spotify_object(token_info) 
+        user_info = sp.current_user()
+        print(user_info)
+        playlists = sp.current_user_playlists()['items']
+        return render_template('home.html', user_info=user_info, playlists=playlists)
+    else:
+        return render_template('home.html', user_info=None)
+
 
 @home_bp.route('/playlist/<playlist_id>')
 def brani(playlist_id):
@@ -24,7 +29,6 @@ def brani(playlist_id):
     playlist = sp.playlist(playlist_id)
     
     results = sp.playlist_items(playlist_id)
-    tracks = results['items']  # Lista di canzoni
+    tracks = results['items']
     
-    # Pagina di ritorno
     return render_template('playlist.html', playlist=playlist, tracks=tracks)
