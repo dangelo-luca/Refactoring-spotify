@@ -4,15 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="static/home.css">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
+    <nav class="bg-gray-800">
+        <div>
+          <div class="relative flex h-16 items-center justify-between">
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+            </div>
+            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+              <div class="hidden sm:ml-6 sm:block">
+                <div class="flex space-x-4">
+                  <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                  <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>
+                  <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
+                  <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
+                  <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center">
+                {% if user_info %}
+                    <a href="{{url_for('auth.logout')}}" class="rounded-md bg-red-900 px-3 py-2 text-sm font-medium text-white">Logout</a>
+                {% else %}
+                    <a href="{{url_for('auth.login')}}" class="rounded-md bg-green-900 px-3 py-2 text-sm font-medium text-white">Login</a>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+
 <h1>Benvenuto, {{ user_info['display_name'] }}!</h1>
 {% if user_info['images'] %}
 <img src="{{ user_info['images'][0]['url'] }}" width="200">
 {% endif %}
-
-
-
 
 <h2>Le tue Playlist:</h2>
 {% if playlists %}
@@ -37,7 +63,7 @@
                     {% endif %}
                     </td>
                     <td>
-                        <a href="/playlist/{{playlist['id'] }}">Visualizza Canzoni</a>
+                        <a href="/playlist/{{playlist['id'] }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -46,7 +72,5 @@
 {% else %}
     <p>Non hai playlist disponibili.</p>
 {% endif %}
-<a href="{{ url_for('auth.logout') }}">Logout</a>
-<a href="{{ url_for('auth.login')}}">login</a>
 </body>
 </html>
