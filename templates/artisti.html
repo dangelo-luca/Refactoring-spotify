@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 50 Artisti Globali</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .artist-container { display: flex; flex-wrap: wrap; justify-content: center; }
+        .artist-card { margin: 10px; text-align: center; }
+        .artist-card img { width: 100px; height: 100px; border-radius: 50%; }
+    </style>
+</head>
+<body>
+    <h1>Top 50 Artisti Globali</h1>
+    <div class="artist-container">
+        {% for artist in artists %}
+            <div class="artist-card">
+                <img src="{{ artist.image }}" alt="{{ artist.name }}">
+                <p>{{ artist.name }} ({{ artist.popularity }})</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
