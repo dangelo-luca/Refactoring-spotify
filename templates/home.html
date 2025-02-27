@@ -17,21 +17,18 @@
               <div class="hidden sm:ml-6 sm:block">
                 <div class="flex space-x-4">
                   <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                  <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>
-                  <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
-                  <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
-                  <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
-                </div>
+                  <a href="{{url_for('home.home')}}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Home</a>
               </div>
+            </div>
               
             </div>
-                <div class="ui search" style="margin-right: 10px;">
-                    <div class="ui icon input">
-                    <input class="prompt" type="text" placeholder="Searcha playlist">
-                    <i class="search icon"></i>
-                    </div>
-                    <div class="results"></div>
-                </div>
+            <form method="POST" action="{{ url_for('home.home') }}">
+                <input type="text" name="query" placeholder="Cerca playlist pubbliche..." value="{{ query or '' }}">
+                <button type="submit">Cerca</button>
+            </form>
+        
+            <!-- Risultati della ricerca -->
+            
             <div class="flex items-center">
                
                 {% if user_info %}
@@ -43,6 +40,22 @@
           </div>
         </div>
       </nav>
+
+      {% if search_results %}
+      <h2>Risultati della Ricerca:</h2>
+      <ul>
+          {% for playlist in search_results %}
+              <li>
+                  <a href="{{ url_for('home.playlist', playlist_id=playlist['id']) }}">
+                      {% if playlist['image'] %}
+                          <img src="{{ playlist['image'] }}" width="50" alt="Copertina playlist">
+                      {% endif %}
+                      {{ playlist['name'] }} - Creato da {{ playlist['owner'] }}
+                  </a>
+              </li>
+          {% endfor %}
+      </ul>
+  {% endif %}
       
 
 <h1>Benvenuto, {{ user_info['display_name'] }}!</h1>

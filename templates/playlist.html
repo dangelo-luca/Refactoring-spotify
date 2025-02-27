@@ -22,8 +22,8 @@
         {% if tracks %}
             <ul>
                 {% for item in tracks %}
-                    <li>{{ item['track']['name'] }} - 
-                        {% for artist in item['track']['artists'] %}
+                    <li>{{ item['name'] }} - 
+                        {% for artist in item['artists'] %}
                             {{ artist['name'] }}{% if not loop.last %}, {% endif %}
                         {% endfor %}
                     </li>
