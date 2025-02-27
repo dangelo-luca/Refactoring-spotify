@@ -12,6 +12,8 @@
     </style>
 </head>
 <body>
+    {%extends'nav.html'%}
+    {% block content %}
     <h1>Top 50 Artisti Globali</h1>
     <div class="artist-container">
         {% for artist in artists %}
@@ -21,5 +23,6 @@
             </div>
         {% endfor %}
     </div>
+    {%endblock %}
 </body>
 </html>

@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
-    <link rel="stylesheet" href="static/playlist.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='playlist.css') }}">
     <title>{{ playlist['name'] }}</title>
 </head>
 <body>
-    <div>
+    {%extends'nav.html'%}
+    {% block content %}
+    <div class="playlist-container">
         <h1 align="center">Playlist: {{ playlist['name'] }}</h1>  
         
         {% if playlist['images'] %}
@@ -32,14 +33,7 @@
         {% else %}
             <p>Questa playlist non contiene brani.</p>
         {% endif %}
-
-        <br>
-        <br>
-        <br>
-        <a href="{{ url_for('home.home') }}">TORNA ALLA HOME</a>
-        <br>
-        <br>
-        <br>
     </div>
+    {%endblock %}
 </body>
 </html>

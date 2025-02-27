@@ -4,43 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="static/home.css">
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" rel="stylesheet">
 </head>
-<body>
-    <nav class="bg-gray-800">
-        <div>
-          <div class="relative flex h-16 items-center justify-between">
-            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-            </div>
-            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-              <div class="hidden sm:ml-6 sm:block">
-                <div class="flex space-x-4">
-                  <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                  <a href="{{url_for('home.home')}}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Home</a>
-              </div>
-            </div>
-              
-            </div>
-            <form method="POST" action="{{ url_for('home.home') }}">
-                <input type="text" name="query" placeholder="Cerca playlist pubbliche..." value="{{ query or '' }}">
-                <button type="submit">Cerca</button>
-            </form>
-        
-            <!-- Risultati della ricerca -->
-            
-            <div class="flex items-center">
-               
-                {% if user_info %}
-                    <a href="{{url_for('auth.logout')}}" class="rounded-md bg-red-900 px-3 py-2 text-sm font-medium text-white">Logout</a>
-                {% else %}
-                    <a href="{{url_for('auth.login')}}" class="rounded-md bg-green-900 px-3 py-2 text-sm font-medium text-white">Login</a>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-      </nav>
 
+<body>
+{%extends'nav.html'%}
+{% block content %}
       {% if search_results %}
       <h2>Risultati della Ricerca:</h2>
       <ul>
@@ -95,5 +63,9 @@
 {% else %}
     <p>Non hai playlist disponibili.</p>
 {% endif %}
+{% endblock %}
 </body>
+
+
+
 </html>
