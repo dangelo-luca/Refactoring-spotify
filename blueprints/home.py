@@ -1,21 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, session,request
-from Services.spotify_oauth import get_spotify_object
+from Services.spotify_oauth import get_spotify_object , get_spotify_client
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+
 home_bp = Blueprint('home', __name__)
 
 
-def get_spotify_client():
-    token_info = session.get("token_info")
 
-    if token_info:
-        return spotipy.Spotify(auth=token_info.get("access_token"))  
-    
-   
-    return spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-        client_id="59eb1d0383344f50a12b1842a08ddfc2",
-        client_secret="5d1d88ac19774b54810d3c52ad49c465"
-    ))
 
 @home_bp.route("/", methods=["GET", "POST"])
 def home():
