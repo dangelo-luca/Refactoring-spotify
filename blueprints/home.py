@@ -11,33 +11,21 @@ home_bp = Blueprint('home', __name__)
 @home_bp.route("/", methods=["GET", "POST"])
 def home():
     sp = get_spotify_client() 
-    
     user_info, playlists = None, []
-    
-   
-    if isinstance(sp, spotipy.Spotify) and session.get("token_info"):
+    if session.get("token_info"):
         try:
             user_info = sp.current_user()
             playlists = sp.current_user_playlists()["items"]
         except Exception:
             pass  
-    
     search_results = []
     query = ""
-    
     
     if request.method == "POST":
         query = request.form.get("query", "").strip()
         if query:
             try:
-                
-                if not isinstance(sp, spotipy.Spotify):
-                    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-                        client_id="59eb1d0383344f50a12b1842a08ddfc2", 
-                        client_secret="5d1d88ac19774b54810d3c52ad49c465"  
-                    ))
-                
-                results = sp.search(q=query, type="playlist", limit=10)
+                results = sp.search(q=query, type="playlist", limit=50)
                 search_results = [
                     {
                         "id": playlist["id"],
@@ -56,13 +44,6 @@ def home():
 @home_bp.route("/playlist/<playlist_id>")
 def playlist(playlist_id):
     sp = get_spotify_client() 
-    
-    if not isinstance(sp, spotipy.Spotify):
-        sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-            client_id="59eb1d0383344f50a12b1842a08ddfc2",  
-            client_secret="5d1d88ac19774b54810d3c52ad49c465"  
-        ))
-
     playlist_data, tracks = None, []
     try:
         playlist_data = sp.playlist(playlist_id)
@@ -83,31 +64,3 @@ def playlist(playlist_id):
 
     return render_template("playlist.html", user_info=user_info, playlist=playlist_data, tracks=tracks)
 
-@home_bp.route('/artisti')
-def top_artists():
-    token_info = session.get('token_info')
-    if not token_info:
-        return redirect(url_for('auth.login'))
-
-    sp = get_spotify_object(token_info)
-    artists = []
-    
-    # Controlla che sp sia definito
-    if sp is None:
-        return "Errore: Spotipy non è stato inizializzato correttamente", 500
-
-    # Cerca i 50 artisti più popolari
-    results = sp.search(q='year:2025', type='artist', limit=50)
-
-    for artist in results['artists']['items']:
-        name = artist['name']
-        image = artist['images'][0]['url'] if artist['images'] else ""
-        popularity = artist['popularity']
-
-        artists.append({'name': name, 'image': image, 'popularity': popularity})
-
-    # Ordina per popolarità
-    artists = sorted(artists, key=lambda x: x['popularity'], reverse=True)
-    user_info = sp.current_user()
-
-    return render_template('artisti.html',user_info=user_info,  artists=artists)    
