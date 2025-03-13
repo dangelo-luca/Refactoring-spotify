@@ -6,6 +6,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 home_bp = Blueprint('home', __name__)
 
 
+
+
 @home_bp.route("/", methods=["GET", "POST"])
 def home():
     sp = get_spotify_client() 
