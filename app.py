@@ -1,13 +1,17 @@
 from flask import Flask
-from blueprints.auth import auth_bp
+from flask_login import LoginManager
+from blueprints.login import login_bp, login_manager
 from blueprints.home import home_bp
 from blueprints.artisti import artisti_bp
 
 app = Flask(__name__)
 app.secret_key = 'chiavesessione'
 
-#collego i blueprint all'app per poter accedere alle loro route
-app.register_blueprint(auth_bp)
+# Inizializza Flask-Login
+login_manager.init_app(app)
+
+# Registra i blueprint
+app.register_blueprint(login_bp)
 app.register_blueprint(home_bp)
 app.register_blueprint(artisti_bp)
 
