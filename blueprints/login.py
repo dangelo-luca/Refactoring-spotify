@@ -22,7 +22,7 @@ def load_user(user_id):
         return User(user_id, token_info)
     return None
 
-@login_bp.route('/login')
+@login_bp.route('/login-flask')
 def login_page():    
     return render_template("login.html")  # Mostra la pagina di login
 
@@ -31,21 +31,8 @@ def spotify_login():
     auth_url = sp_oauth.get_authorize_url()  # URL di autorizzazione Spotify
     return redirect(auth_url)
 
-@login_bp.route('/callback')
-def callback():
-    code = request.args.get('code')  # Recupero codice di autorizzazione
-    token_info = sp_oauth.get_access_token(code)  # Ottenimento access token
-    if not token_info:
-        flash("Autenticazione fallita", "error")
-        return redirect(url_for('login.login_page'))
-    
-    session['token_info'] = token_info  # Salvataggio token in sessione
-    user = User(user_id=token_info['access_token'], token_info=token_info)
-    login_user(user)  # Login utente con Flask-Login
-    
-    return redirect(url_for('home.home'))
 
-@login_bp.route('/logout')
+@login_bp.route('/logout-flask')
 @login_required
 def logout():
     session.clear()  # Pulizia sessione
