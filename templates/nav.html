@@ -37,9 +37,9 @@
             <div class="flex items-center">
                
                 {% if user_info %}
-                    <a href="{{url_for('auth.logout')}}" class="rounded-md bg-red-900 px-3 py-2 text-sm font-medium text-white">Logout</a>
+                    <a href="{{url_for('auth.logout')}}" class="rounded-md bg-red-900 px-3 py-2 text-sm font-medium text-white">disconnetti spotifiy</a>
                 {% else %}
-                    <a href="{{url_for('auth.login')}}" class="rounded-md bg-green-900 px-3 py-2 text-sm font-medium text-white">Login</a>
+                    <a href="{{url_for('auth.login')}}" class="rounded-md bg-green-900 px-3 py-2 text-sm font-medium text-white">collegati a spotify</a>
                 {% endif %}
             </div>
           </div>
