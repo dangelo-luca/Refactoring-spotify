@@ -4,9 +4,17 @@ from blueprints.login import login_bp, login_manager
 from blueprints.home import home_bp
 from blueprints.artisti import artisti_bp
 from blueprints.auth import auth_bp
+from models import db
+import sqlite3
 
 app = Flask(__name__)
+
 app.secret_key = 'chiavesessione'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'  # Cambia con il tuo URI del database
+db.init_app(app)
+
+with app.app_context(): 
+    db.create_all()
 
 # Inizializza Flask-Login
 login_manager.init_app(app)

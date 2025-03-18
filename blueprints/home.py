@@ -8,7 +8,7 @@ home_bp = Blueprint('home', __name__)
 
 
 
-@home_bp.route("/", methods=["GET", "POST"])
+@home_bp.route("/home", methods=["GET", "POST"])
 def home():
     sp = get_spotify_client() 
     user_info, playlists = None, []
