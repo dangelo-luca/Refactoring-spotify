@@ -39,7 +39,7 @@ def register():
     
     return render_template('register.html', error=None)
 
-@login_bp.route('/login-flask', methods=['GET', 'POST'])
+@login_bp.route('/loginflask', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -61,6 +61,6 @@ def login():
 @login_required
 def logout():
     logout_user
-    session.pop('user_id', None)
+    session.clear()
     flash("Logout effettuato con successo.", "success")
-    return redirect(url_for('login.login-flask'))
+    return redirect(url_for('login.login'))

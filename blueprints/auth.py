@@ -15,7 +15,7 @@ def callback():
     session['token_info'] = token_info #salvo il token nella mia sessione x riutilizzarlo
     return redirect(url_for('home.home'))
 
-@auth_bp.route('/logout')
-def logout():
-    session.clear() #cancelliamo l'access token salvato in session
-    return redirect(url_for('home.home'))
+@auth_bp.route('/disconetti')
+def disconetti():
+    session.pop('token_info', None)  # Rimuove solo il token di accesso dalla sessione
+    return redirect(url_for('home.home'))  # Torna alla home senza forzare il login
