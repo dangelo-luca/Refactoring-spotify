@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="static/home.css">
+<title>Home</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
@@ -85,6 +87,24 @@
             </div>
         </div>
     {% endfor %}
+</div>
+
+<!-- Grafico: Top 5 Artisti -->
+<h2>Top 5 Artisti</h2>
+<div>
+    {{ fig1_html|safe }}
+</div>
+
+<!-- Grafico: Top 5 Album -->
+<h2>Top 5 Album</h2>
+<div>
+    {{ fig2_html|safe }}
+</div>
+
+<!-- Grafico: Distribuzione dei Generi Musicali -->
+<h2>Distribuzione dei Generi Musicali</h2>
+<div>
+    {{ fig3_html|safe }}
 </div>
 
 <a href="{{ url_for('login.logout') }}">logout</a>

@@ -4,6 +4,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from models import db, Playlist
 from flask_login import login_required, current_user
+from Services.num import fig1_html, fig2_html, fig3_html
 home_bp = Blueprint('home', __name__)
 
 
@@ -69,7 +70,10 @@ def home():
         playlists=playlists,
         query=query,
         search_results=search_results,
-        saved_playlists=saved_playlists
+        saved_playlists=saved_playlists,
+        fig1_html=fig1_html,
+        fig2_html=fig2_html,
+        fig3_html=fig3_html
     )
 
 @home_bp.route("/playlist/<playlist_id>")
