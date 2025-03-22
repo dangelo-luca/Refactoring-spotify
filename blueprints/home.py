@@ -4,7 +4,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from models import db, Playlist
 from flask_login import login_required, current_user
-from Services.num import fig1_html, fig2_html, fig3_html
+from Services.num import analyze_and_visualize
 home_bp = Blueprint('home', __name__)
 
 
@@ -70,10 +70,7 @@ def home():
         playlists=playlists,
         query=query,
         search_results=search_results,
-        saved_playlists=saved_playlists,
-        fig1_html=fig1_html,
-        fig2_html=fig2_html,
-        fig3_html=fig3_html
+        saved_playlists=saved_playlists
     )
 
 @home_bp.route("/playlist/<playlist_id>")
@@ -96,6 +93,8 @@ def playlist(playlist_id):
     except Exception as e:
         print("Errore nel recupero della playlist:", e)
     user_info = sp.current_user()
+    charts = analyze_and_visualize(playlist_id)
 
-    return render_template("playlist.html", user_info=user_info, playlist=playlist_data, tracks=tracks)
+    return render_template("playlist.html", user_info=user_info, playlist=playlist_data, tracks=tracks, charts=charts)
 
+    

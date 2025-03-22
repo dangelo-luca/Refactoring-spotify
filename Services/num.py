@@ -1,30 +1,60 @@
 import pandas as pd
 import plotly.express as px
-from plotly.io import to_html
+from Services.spotify_oauth import get_playlist_tracks  
 
-# Supponiamo di avere un DataFrame con i dati
-data = {
-    'artist': ['Artist1', 'Artist2', 'Artist3', 'Artist4', 'Artist5', 'Artist6'],
-    'album': ['Album1', 'Album2', 'Album3', 'Album4', 'Album5', 'Album6'],
-    'genre': ['Pop', 'Rock', 'Jazz', 'Pop', 'Rock', 'Jazz'],
-    'plays': [100, 200, 150, 300, 250, 50]
-}
-df = pd.DataFrame(data)
+def analyze_and_visualize(playlist_id):
+   
+    tracks = get_playlist_tracks(playlist_id)
 
-# Top 5 artisti
-top_artists = df.groupby('artist')['plays'].sum().nlargest(5).reset_index()
-fig1 = px.bar(top_artists, x='artist', y='plays', title='Top 5 Artisti', color='artist')
+    if not tracks:
+        print("Nessun dato disponibile per l'analisi.")
+        return None
 
-# Top 5 album
-top_albums = df.groupby('album')['plays'].sum().nlargest(5).reset_index()
-fig2 = px.bar(top_albums, x='album', y='plays', title='Top 5 Album', color='album')
+    
+    data = [
+        {
+            "artist": track["artist"],
+            "album": track["album"],
+            "track_name": track["name"],
+            "popularity": track.get("popularity", 0),
+            "genre": track.get("genre", "Sconosciuto") 
+        }
+        for track in tracks
+    ]
 
-# Distribuzione dei generi musicali
-genre_distribution = df['genre'].value_counts().reset_index()
-genre_distribution.columns = ['genre', 'count']
-fig3 = px.pie(genre_distribution, names='genre', values='count', title='Distribuzione dei Generi Musicali')
+    df = pd.DataFrame(data)
 
-# Esporta i grafici come stringhe HTML
-fig1_html = to_html(fig1, full_html=False)
-fig2_html = to_html(fig2, full_html=False)
-fig3_html = to_html(fig3, full_html=False)
+    if df.empty:
+        print("DataFrame vuoto, impossibile generare il grafico.")
+        return None
+
+   
+    top_artists = df.groupby("artist")["popularity"].sum().nlargest(5).reset_index()
+    fig_artists = px.bar(top_artists, x="artist", y="popularity", title="Top 5 Artisti più popolari")
+
+    
+    top_albums = df.groupby("album")["popularity"].sum().nlargest(5).reset_index()
+    fig_albums = px.bar(top_albums, x="album", y="popularity", title="Top 5 Album più popolari")
+
+    
+    genre_counts = df["genre"].str.split(", ", expand=True).stack().value_counts().reset_index()
+    genre_counts.columns = ["genre", "count"]
+
+   
+    genre_counts = genre_counts[genre_counts["genre"] != "Sconosciuto"]
+
+    
+    fig_genres = px.pie(
+        genre_counts,
+        names="genre",
+        values="count",
+        title="Distribuzione dei Generi Musicali",
+        labels={"genre": "Genere", "count": "Numero di brani"}
+    )
+
+    
+    return {
+        "fig_artists": fig_artists.to_html(full_html=False),
+        "fig_albums": fig_albums.to_html(full_html=False),
+        "fig_genres": fig_genres.to_html(full_html=False),
+    }
