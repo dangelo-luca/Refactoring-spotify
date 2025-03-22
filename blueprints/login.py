@@ -20,15 +20,21 @@ def register():
         username = request.form['username']
         password = request.form['password']
         
+        # Controlla se l'username è già in uso
         if User.query.filter_by(username=username).first():
             flash("Questo username è già in uso.", "error")
             return render_template('register.html', error="Questo username è già in uso.")
         
+        # Crea un nuovo utente
         hashed_password = generate_password_hash(password)
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        flash("Registrazione completata con successo.", "success")
+        
+        # Effettua automaticamente il login dell'utente
+        login_user(new_user)
+        session['user_id'] = new_user.id  # Salva l'ID utente nella sessione
+        flash("Registrazione completata con successo. Sei stato loggato automaticamente.", "success")
         return redirect(url_for('home.home'))
     
     return render_template('register.html', error=None)
@@ -54,7 +60,7 @@ def login():
 @login_bp.route('/logout')
 @login_required
 def logout():
-    logout_user()
+    logout_user
     session.pop('user_id', None)
     flash("Logout effettuato con successo.", "success")
-    return redirect(url_for('login.login'))
+    return redirect(url_for('login.login-flask'))
