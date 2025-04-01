@@ -43,8 +43,14 @@
         <h2>Top 5 Album</h2>
         <div id="fig_albums">{{ charts.fig_albums|safe }}</div>
 
-        <h2>Distribuzione dei Generi Musicali</h2>
-        <div id="fig_genres">{{ charts.fig_genres|safe }}</div>
+        <h2>Distribuzione della Popolarità</h2>
+        <div id="fig_popularity">{{ charts.fig_popularity|safe }}</div>
+
+        <h2>Distribuzione dei Generi Musicali (Grafico a Barre)</h2>
+        <div id="fig_genres_bar">{{ charts.fig_genres_bar|safe }}</div>
+
+        <h2>Distribuzione dei Generi Musicali (Grafico a Torta)</h2>
+        <div id="fig_genres_pie">{{ charts.fig_genres_pie|safe }}</div>
     </div>
 {% else %}
     <p>Nessun grafico disponibile per questa playlist.</p>
