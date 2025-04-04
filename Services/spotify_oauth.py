@@ -80,7 +80,9 @@ def get_playlist_tracks(playlist_id):
                 "album": track_info["album"]["name"],
                 "popularity": track_info.get("popularity", 0),
                 "genre": ", ".join(genres) if genres else "Sconosciuto",  
-                "cover": cover  
+                "cover": cover,
+                "duration": track_info["duration_ms"],  # Durata in millisecondi
+                "release_year": track_info["album"]["release_date"][:4],  # Anno di rilascio 
                
             })
 
