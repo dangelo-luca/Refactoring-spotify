@@ -122,19 +122,10 @@ def analyze_and_visualize(playlist_id):
         category_orders={"duration_range": labels}
     )
 
-    df_filtered_years = df[df["release_year"].apply(lambda x: str(x).isdigit())].copy()
-    df_filtered_years["release_year"] = df_filtered_years["release_year"].astype(int)
+   
 
-    popularity_by_year = df_filtered_years.groupby("release_year")["popularity"].mean().reset_index()
 
-    fig_popularity_over_time = px.line(
-        popularity_by_year,
-        x="release_year",
-        y="popularity",
-        title="Evoluzione della Popolarità nel Tempo",
-        labels={"release_year": "Anno di Pubblicazione", "popularity": "Popolarità Media"},
-        markers=True
-    )
+    
 
     return {
         "fig_artists": fig_artists.to_html(full_html=False),
@@ -144,5 +135,4 @@ def analyze_and_visualize(playlist_id):
         "fig_genres_pie": fig_genres_pie.to_html(full_html=False),
         "fig_release_year": fig_release_year.to_html(full_html=False),
         "fig_duration": fig_duration.to_html(full_html=False),
-        "fig_popularity_over_time": fig_popularity_over_time.to_html(full_html=False),
     }
