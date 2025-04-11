@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confronto Playlist</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Confronto Playlist</h1>
+
+    <h2>Playlist 1: {{ playlist1_name }}</h2>
+    <h2>Playlist 2: {{ playlist2_name }}</h2>
+
+    <div>
+        <p><strong>Brani in comune:</strong> {{ common_tracks }}</p>
+        <p><strong>Percentuale di somiglianza:</strong> {{ similarity_percentage }}%</p>
+    </div>
+
+    <!-- Div per il grafico -->
+    <div id="confronto-grafico" style="width: 100%; height: 500px;"></div>
+
+    <script>
+        // Dati passati dal backend
+        const playlist1Name = "{{ playlist1_name }}";
+        const playlist2Name = "{{ playlist2_name }}";
+        const playlist1Total = "{{ playlist1_total }}";
+        const playlist2Total = "{{ playlist2_total }}";
+        const commonTracks = "{{ common_tracks }}";
+
+        // Dati per il grafico
+        const data = [
+            {
+                x: [playlist1Name, playlist2Name, "Brani in Comune"],
+                y: [playlist1Total, playlist2Total, commonTracks],
+                type: 'bar',
+                marker: {
+                    color: ['blue', 'green', 'orange']
+                }
+            }
+        ];
+
+        // Layout del grafico
+        const layout = {
+            title: 'Confronto tra Playlist',
+            xaxis: { title: 'Categorie' },
+            yaxis: { title: 'Numero di Brani' }
+        };
+
+        // Disegna il grafico
+        Plotly.newPlot('confronto-grafico', data, layout);
+    </script>
+</body>
+</html> 

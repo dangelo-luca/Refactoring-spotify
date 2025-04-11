@@ -35,6 +35,14 @@
                       <br>
                       <a href="/playlist/{{playlist['id'] }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
                   </form>
+                  <form method="POST" action="{{ url_for('home.select_playlist') }}">
+                    <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
+                    <input type="hidden" name="playlist_name" value="{{ playlist['name'] }}">
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
+                        Seleziona Playlist
+                    </button>
+                </form>
               </div>
           {% endfor %}
       </div>
@@ -92,7 +100,11 @@
         </div>
     {% endfor %}
 </div>
-
+<form method="POST" action="{{ url_for('home.reset_selection') }}">
+    <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white">
+        Resetta Selezione Playlist
+    </button>
+</form>
 
 
 {% endblock %}
