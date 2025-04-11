@@ -79,6 +79,16 @@
                     </td>
                     <td class="text-center">
                         <a href="/playlist/{{playlist['id'] }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
+                        <br>
+                        <br>
+                        <form method="POST" action="{{ url_for('home.select_playlist') }}">
+                            <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
+                            <input type="hidden" name="playlist_name" value="{{ playlist['name'] }}">
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <button type="submit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
+                                Seleziona Playlist
+                            </button>
+                        </form>
                     </td>
                 </tr>
             {% endfor %}
@@ -97,6 +107,16 @@
                 <h3>{{ playlist.name }}</h3>
                 <p>Creato da: {{ playlist.owner }}</p>
                 <a href="/playlist/{{playlist['id'] }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
+                <br>
+                <br>
+                <form method="POST" action="{{ url_for('home.select_playlist') }}">
+                    <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
+                    <input type="hidden" name="playlist_name" value="{{ playlist['name'] }}">
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
+                        Seleziona Playlist
+                    </button>
+                </form>
             </div>
         </div>
     {% endfor %}
