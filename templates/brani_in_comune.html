@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Confronto Playlist</h1>
+    {%extends'nav.html'%}
+    {% block content %}
+    <h1>Brani in Comune</h1>
 
     <h2>Playlist 1: {{ playlist1_name }}</h2>
     <h2>Playlist 2: {{ playlist2_name }}</h2>
@@ -51,5 +53,7 @@
         // Disegna il grafico
         Plotly.newPlot('confronto-grafico', data, layout);
     </script>
+    
+    {% endblock %}
 </body>
 </html> 

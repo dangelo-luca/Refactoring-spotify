@@ -64,6 +64,11 @@ def home():
     # Recupera le playlist salvate dal database per l'utente autenticato
     saved_playlists = Playlist.query.filter_by(user_id=current_user.id).all()
 
+    if len(session['selected_playlists']) == 2:
+        session['selected_playlists'] = []
+        flash("Selezione delle playlist resettata.")
+
+        
     return render_template(
         "home.html",
         user_info=user_info,
@@ -158,7 +163,7 @@ def compare_playlists():
     session['selected_playlists'] = []
 
     return render_template(
-        'confronto.html',
+        'brani_in_comune.html',
         playlist1_name=playlist1['name'],
         playlist2_name=playlist2['name'],
         playlist1_total=playlist1_total,
@@ -166,9 +171,3 @@ def compare_playlists():
         common_tracks=common_tracks,
         similarity_percentage=similarity_percentage
     )
-
-@home_bp.route('/reset_selection', methods=['POST'])
-def reset_selection():
-    session['selected_playlists'] = []
-    flash("Selezione delle playlist resettata.")
-    return redirect(url_for('home.home'))
