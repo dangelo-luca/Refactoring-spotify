@@ -11,7 +11,34 @@
 <body>
 {%extends'nav.html'%}
 {% block content %}
-      
+      {% if search_results %}
+      <h2>Risultati della Ricerca</h2>
+      <div class="search-results">
+          {% for playlist in search_results %}
+              <div class="playlist-card">
+                  <a href="{{ url_for('home.playlist', playlist_id=playlist['id']) }}">
+                      {% if playlist['image'] %}
+                          <img src="{{ playlist['image'] }}" alt="Copertina playlist" class="playlist-image">
+                      {% endif %}
+                      <div class="playlist-info">
+                          <h3>{{ playlist['name'] }}</h3>
+                          <p>Creato da: {{ playlist['owner'] }}</p>
+                      </div>
+                  </a>
+                  <form method="POST" action="{{ url_for('home.home') }}">
+                      <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
+                      <input type="hidden" name="playlist_name" value="{{ playlist['name'] }}">
+                      <input type="hidden" name="playlist_owner" value="{{ playlist['owner'] }}">
+                      <input type="hidden" name="playlist_image" value="{{ playlist['image'] }}">
+                      <button type="submit" class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Aggiungi ai Preferiti</button>
+                      <br>
+                      <br>
+                      <a href="/playlist/{{playlist['id'] }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
+                  </form>
+              </div>
+          {% endfor %}
+      </div>
+  {% endif %}
       
 
 <h1>Benvenuto, {{ username }}!</h1>
@@ -66,11 +93,7 @@
     {% endfor %}
 </div>
 
-<form method="POST" action="{{ url_for('home.reset_selection') }}">
-    <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white">
-        Resetta Selezione Playlist
-    </button>
-</form>
+
 
 {% endblock %}
 </body>

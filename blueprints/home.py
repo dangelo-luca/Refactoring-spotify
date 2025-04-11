@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, session,request, flash
+from flask import Blueprint, render_template, redirect, url_for, session,request
 from Services.spotify_oauth import get_spotify_object , get_spotify_client
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -6,6 +6,9 @@ from models import db, Playlist
 from flask_login import login_required, current_user
 from Services.num import analyze_and_visualize
 home_bp = Blueprint('home', __name__)
+
+
+
 
 @home_bp.route("/home", methods=["GET", "POST"])
 @login_required
@@ -39,6 +42,24 @@ def home():
                 )
                 db.session.add(new_playlist)
                 db.session.commit()
+        # Controlla se è una ricerca
+        elif "query" in request.form:
+            query = request.form.get("query", "").strip()
+            if query:
+                try:
+                    results = sp.search(q=query, type="playlist", limit=50)
+                    search_results = [
+                        {
+                            "id": playlist["id"],
+                            "name": playlist.get("name", "Senza Nome"),
+                            "owner": playlist["owner"].get("display_name", "Sconosciuto"),
+                            "image": playlist["images"][0]["url"] if playlist.get("images") else None
+                        }
+                        for playlist in results.get("playlists", {}).get("items", [])
+                        if playlist
+                    ]
+                except Exception as e:
+                    print("Errore nella ricerca:", e)
 
     # Recupera le playlist salvate dal database per l'utente autenticato
     saved_playlists = Playlist.query.filter_by(user_id=current_user.id).all()
@@ -76,99 +97,4 @@ def playlist(playlist_id):
 
     return render_template("playlist.html", user_info=user_info, playlist=playlist_data, tracks=tracks, charts=charts)
 
-@home_bp.route('/select_playlist', methods=['POST'])
-def select_playlist():
-    # Ottieni i dati della playlist dal form
-    playlist_id = request.form.get('playlist_id')
-    playlist_name = request.form.get('playlist_name')
-
-    if not playlist_id or not playlist_name:
-        flash("Errore: Dati della playlist mancanti.")
-        return redirect(url_for('home.home'))
-
-    # Salva l'ID della playlist nella sessione (o in un'altra struttura dati)
-    if 'selected_playlists' not in session:
-        session['selected_playlists'] = []
-
-    # Aggiungi la playlist selezionata alla sessione
-    session['selected_playlists'].append({'id': playlist_id, 'name': playlist_name})
-    flash(f"Playlist '{playlist_name}' selezionata con successo!")
-
-    # Controlla se ci sono due playlist selezionate
-    if len(session['selected_playlists']) == 2:
-        return redirect(url_for('home.compare_playlists'))
-
-    return redirect(url_for('home.home'))
-
-@home_bp.route('/compare_playlists', methods=['GET'])
-def compare_playlists():
-    # Recupera le playlist selezionate dalla sessione
-    selected_playlists = session.get('selected_playlists', [])
-
-    if len(selected_playlists) < 2:
-        flash("Seleziona almeno due playlist per confrontarle.")
-        return redirect(url_for('home.home'))
-
-    # Ottieni i dati delle due playlist
-    playlist1 = selected_playlists[0]
-    playlist2 = selected_playlists[1]
-
-    # Recupera i dati delle playlist da Spotify
-    sp = get_spotify_client()
-    try:
-        playlist1_data = sp.playlist(playlist1['id'])
-        playlist2_data = sp.playlist(playlist2['id'])
-
-        # Estrai i brani dalle playlist
-        playlist1_tracks = {track['track']['name'] for track in playlist1_data['tracks']['items'] if track.get('track')}
-        playlist2_tracks = {track['track']['name'] for track in playlist2_data['tracks']['items'] if track.get('track')}
-
-        # Calcola i dati reali
-        playlist1_total = len(playlist1_tracks)
-        playlist2_total = len(playlist2_tracks)
-        common_tracks = len(playlist1_tracks.intersection(playlist2_tracks))
-        similarity_percentage = (common_tracks / min(playlist1_total, playlist2_total)) * 100 if min(playlist1_total, playlist2_total) > 0 else 0
-
-    except Exception as e:
-        flash(f"Errore nel recupero delle playlist: {e}")
-        return redirect(url_for('home.home'))
-
-    # Resetta la lista delle playlist selezionate
-    session['selected_playlists'] = []
-
-    return render_template(
-        'confronto.html',
-        playlist1_name=playlist1['name'],
-        playlist2_name=playlist2['name'],
-        playlist1_total=playlist1_total,
-        playlist2_total=playlist2_total,
-        common_tracks=common_tracks,
-        similarity_percentage=similarity_percentage
-    )
-
-@home_bp.route('/reset_selection', methods=['POST'])
-def reset_selection():
-    session['selected_playlists'] = []
-    flash("Selezione delle playlist resettata.")
-    return redirect(url_for('home.home'))
-
-@home_bp.route('/ricerca', methods=['GET', 'POST'])
-def ricerca():
-    sp = get_spotify_client()
-    search_results = []
-
-    if request.method == 'POST':
-        query = request.form.get('query', '').strip()
-        if query:
-            try:
-                # Effettua la ricerca delle playlist tramite l'API di Spotify
-                results = sp.search(q=query, type='playlist', limit=10)
-                search_results = results['playlists']['items']
-            except Exception as e:
-                flash(f"Errore durante la ricerca: {e}")
-                return redirect(url_for('home.ricerca'))
-
-    return render_template('ricerca.html', search_results=search_results)
-
-
-
+    
