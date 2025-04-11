@@ -136,12 +136,13 @@ def compare_playlists():
         return redirect(url_for('home.home'))
 
     # Ottieni i dati delle due playlist
-    playlist1 = selected_playlists[0]
-    playlist2 = selected_playlists[1]
-
-    # Recupera i dati delle playlist da Spotify
     sp = get_spotify_client()
+    user_info = None
     try:
+        user_info = sp.current_user()  # Recupera le informazioni dell'utente
+        playlist1 = selected_playlists[0]
+        playlist2 = selected_playlists[1]
+
         playlist1_data = sp.playlist(playlist1['id'])
         playlist2_data = sp.playlist(playlist2['id'])
 
@@ -164,6 +165,7 @@ def compare_playlists():
 
     return render_template(
         'confronto.html',
+        user_info=user_info,  # Passa user_info al template
         playlist1_name=playlist1['name'],
         playlist2_name=playlist2['name'],
         playlist1_total=playlist1_total,
