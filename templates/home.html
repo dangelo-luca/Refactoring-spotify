@@ -35,6 +35,7 @@
                       <br>
                       <a href="/playlist/{{playlist['id'] }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
                   </form>
+                  <br>
                   <form method="POST" action="{{ url_for('home.select_playlist') }}">
                     <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
                     <input type="hidden" name="playlist_name" value="{{ playlist['name'] }}">

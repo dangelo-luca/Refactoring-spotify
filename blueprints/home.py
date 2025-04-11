@@ -163,7 +163,7 @@ def compare_playlists():
     session['selected_playlists'] = []
 
     return render_template(
-        'brani_in_comune.html',
+        'confronto.html',
         playlist1_name=playlist1['name'],
         playlist2_name=playlist2['name'],
         playlist1_total=playlist1_total,
