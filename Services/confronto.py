@@ -62,7 +62,7 @@ def carica_playlist(self, percorso_file):
         """
         try:
             with open(percorso_file, 'r') as file:
-                return [line.strip() for line in file.readlines()]
+                return [{"nome": line.strip(), "popolarita": int(line.strip()[-1]) * 10} for line in file.readlines()]
         except FileNotFoundError:
             messagebox.showerror("Errore", f"Il file '{percorso_file}' non è stato trovato.")
             return []
@@ -78,25 +78,42 @@ def confronta_playlist_logic(self, playlist1, playlist2):
         totale_minore = min(len(playlist1), len(playlist2))
         percentuale_somiglianza = (len(brani_comuni) / totale_minore) * 100 if totale_minore > 0 else 0
 
+        popolarita_plapist1 = [brano['popolarita'] for brano in playlist1 if 'popolarita' in brano]
+        popolarita_plapist2 = [brano['popolarita'] for brano in playlist2 if 'popolarita' in brano]
+
+        media_popolarita1 = sum(popolarita_plapist1) / len(popolarita_plapist1)
+        media_popolarita2 = sum(popolarita_plapist2) / len(popolarita_plapist2)
+
         return {
             "brani_comuni": list(brani_comuni),
             "percentuale_somiglianza": percentuale_somiglianza,
             "totale_playlist1": len(playlist1),
             "totale_playlist2": len(playlist2),
-            "totale_comuni": len(brani_comuni)
+            "totale_comuni": len(brani_comuni),
+            "media_popolarita1": media_popolarita1,
+            "media_popolarita2": media_popolarita2    
         }
 
 def genera_grafico(self, dati):
-        """
-        Genera un grafico che mostra il numero totale di brani in ciascuna playlist,
-        il numero di brani in comune e la percentuale di somiglianza.
-        """
+
+        
         labels = ['Playlist 1', 'Playlist 2', 'Brani Comuni']
         valori = [dati["totale_playlist1"], dati["totale_playlist2"], dati["totale_comuni"]]
 
+        plt.figure(figsize=(10, 5))
+
+        plt.subplot(1, 2, 1)
         plt.bar(labels, valori, color=['blue', 'green', 'orange'])
         plt.title(f"Somiglianza tra Playlist ({dati['percentuale_somiglianza']:.2f}%)")
         plt.ylabel("Numero di Brani")
+
+        labels_popolarita = ['playlist 1', 'playlist 2']
+        valori_popolarita = [dati["media_popolarita1"], dati["media_popolarita2"]]
+        plt.subplot(1, 2, 2)
+        plt.bar(labels_popolarita, valori_popolarita, color=['blue', 'green'])
+        plt.title("Popolarità Media")
+        
+        plt.tight_layout()
         plt.show()
 
 

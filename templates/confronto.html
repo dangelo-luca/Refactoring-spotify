@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confronto Playlist</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
 </head>
 <body>
     {%extends'nav.html'%}
@@ -22,6 +22,7 @@
 
     <!-- Div per il grafico -->
     <div id="confronto-grafico" style="width: 100%; height: 500px;"></div>
+    <div id="popolarita-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
 
     <script>
         // Dati passati dal backend
@@ -30,9 +31,11 @@
         const playlist1Total = "{{ playlist1_total }}";
         const playlist2Total = "{{ playlist2_total }}";
         const commonTracks = "{{ common_tracks }}";
+        const mediaPopolarita1 = "{{ media_popolarita1 }}";
+        const mediaPopolarita2 = "{{ media_popolarita2 }}";
 
         // Dati per il grafico
-        const data = [
+        const dataBrani = [
             {
                 x: [playlist1Name, playlist2Name, "Brani in Comune"],
                 y: [playlist1Total, playlist2Total, commonTracks],
@@ -45,15 +48,36 @@
 
         // Layout del grafico
         const layout = {
-            title: 'Confronto tra Playlist',
+            title: 'Brani in Comune',
             xaxis: { title: 'Categorie' },
             yaxis: { title: 'Numero di Brani' }
         };
 
         // Disegna il grafico
-        Plotly.newPlot('confronto-grafico', data, layout);
+        Plotly.newPlot('confronto-grafico', dataBrani, layout);
+
+        const dataPopolarita = [
+            {
+                x: [playlist1Name, playlist2Name],
+                y: [mediaPopolarita1, mediaPopolarita2],
+                type: 'bar',
+                marker: {
+                    color: ['blue', 'green']
+                }
+            }
+        ];
+
+        // Layout del grafico della popolarità media
+        const layoutPopolarita = {
+            title: 'Confronto della Popolarità Media',
+            xaxis: { title: 'Playlist' },
+            yaxis: { title: 'Popolarità Media' }
+        };
+
+        // Disegna il grafico della popolarità media
+        Plotly.newPlot('popolarita-grafico', dataPopolarita, layoutPopolarita);
     </script>
     
     {% endblock %}
 </body>
-</html> 
+</html>

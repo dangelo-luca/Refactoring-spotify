@@ -24,6 +24,13 @@ def home():
     search_results = []
     query = ""
 
+    if 'selected_playlists' not in session:
+        session['selected_playlists'] = []  # Initialize if not present
+
+    if len(session['selected_playlists']) == 2:
+        session['selected_playlists'] = []
+        flash("Selezione delle playlist resettata.")
+
     if request.method == "POST":
         # Controlla se è una richiesta per aggiungere una playlist ai preferiti
         if "playlist_id" in request.form:
@@ -63,10 +70,6 @@ def home():
 
     # Recupera le playlist salvate dal database per l'utente autenticato
     saved_playlists = Playlist.query.filter_by(user_id=current_user.id).all()
-
-    if len(session['selected_playlists']) == 2:
-        session['selected_playlists'] = []
-        flash("Selezione delle playlist resettata.")
 
         
     return render_template(
@@ -112,7 +115,7 @@ def select_playlist():
         flash("Errore: Dati della playlist mancanti.")
         return redirect(url_for('home.home'))
 
-    # Salva l'ID della playlist nella sessione (o in un'altra struttura dati)
+    # Ensure 'selected_playlists' is initialized in the session
     if 'selected_playlists' not in session:
         session['selected_playlists'] = []
 
@@ -147,14 +150,26 @@ def compare_playlists():
         playlist2_data = sp.playlist(playlist2['id'])
 
         # Estrai i brani dalle playlist
-        playlist1_tracks = {track['track']['name'] for track in playlist1_data['tracks']['items'] if track.get('track')}
-        playlist2_tracks = {track['track']['name'] for track in playlist2_data['tracks']['items'] if track.get('track')}
+        playlist1_tracks = [
+            {"name": track["track"].get("name", "Senza Nome"), "popularity": track["track"].get("popularity", 0)}
+            for track in playlist1_data['tracks']['items'] if track.get('track')
+        ]
+        playlist2_tracks = [
+            {"name": track["track"].get("name", "Senza Nome"), "popularity": track["track"].get("popularity", 0)}
+            for track in playlist2_data['tracks']['items'] if track.get('track')
+        ]
 
         # Calcola i dati reali
         playlist1_total = len(playlist1_tracks)
         playlist2_total = len(playlist2_tracks)
-        common_tracks = len(playlist1_tracks.intersection(playlist2_tracks))
+        common_tracks = len(set([t['name'] for t in playlist1_tracks]).intersection(
+            set([t['name'] for t in playlist2_tracks])
+        ))
         similarity_percentage = (common_tracks / min(playlist1_total, playlist2_total)) * 100 if min(playlist1_total, playlist2_total) > 0 else 0
+
+        # Calcola la popolarità media
+        media_popolarita1 = sum([t['popularity'] for t in playlist1_tracks]) / playlist1_total if playlist1_total > 0 else 0
+        media_popolarita2 = sum([t['popularity'] for t in playlist2_tracks]) / playlist2_total if playlist2_total > 0 else 0
 
     except Exception as e:
         flash(f"Errore nel recupero delle playlist: {e}")
@@ -165,11 +180,15 @@ def compare_playlists():
 
     return render_template(
         'confronto.html',
-        user_info=user_info,  # Passa user_info al template
+        user_info=user_info,
         playlist1_name=playlist1['name'],
         playlist2_name=playlist2['name'],
         playlist1_total=playlist1_total,
         playlist2_total=playlist2_total,
-        common_tracks=common_tracks,
-        similarity_percentage=similarity_percentage
+        common_tracks=len(set([t['name'] for t in playlist1_tracks]).intersection(
+            set([t['name'] for t in playlist2_tracks])
+        )),
+        similarity_percentage=similarity_percentage,
+        media_popolarita1=media_popolarita1,
+        media_popolarita2=media_popolarita2
     )
