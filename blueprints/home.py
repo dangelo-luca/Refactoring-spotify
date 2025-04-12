@@ -150,13 +150,15 @@ def compare_playlists():
         playlist1_tracks = [
             {"name": track["track"].get("name", "Senza Nome"),
              "artist": track["track"]["artists"][0].get("name", "Sconosciuto"),
-             "popularity": track["track"].get("popularity", 0)}
+             "popularity": track["track"].get("popularity", 0),
+             "genres": sp.artist(track["track"]["artists"][0]["id"]).get("genres", [])}
             for track in playlist1_data['tracks']['items'] if track.get('track')
         ]
         playlist2_tracks = [
             {"name": track["track"].get("name", "Senza Nome"),
              "artist": track["track"]["artists"][0].get("name", "Sconosciuto"),
-             "popularity": track["track"].get("popularity", 0)}
+             "popularity": track["track"].get("popularity", 0),
+             "genres": sp.artist(track["track"]["artists"][0]["id"]).get("genres", [])}
             for track in playlist2_data['tracks']['items'] if track.get('track')
         ]
 
@@ -184,10 +186,25 @@ def compare_playlists():
             for artista in artisti_comuni
         }
 
-        # Prepara i dati per il grafico
+        # Calcola la frequenza dei generi musicali
+        generi_playlist1 = [genere for track in playlist1_tracks for genere in track['genres']]
+        generi_playlist2 = [genere for track in playlist2_tracks for genere in track['genres']]
+
+        frequenza_generi = {}
+        for genere in set(generi_playlist1 + generi_playlist2):
+            frequenza_generi[genere] = {
+                "playlist1": generi_playlist1.count(genere),
+                "playlist2": generi_playlist2.count(genere)
+            }
+
+        # Prepara i dati per i grafici
         artisti = list(frequenza_artisti.keys())
         frequenze_playlist1 = [frequenza_artisti[artista]["playlist1"] for artista in artisti]
         frequenze_playlist2 = [frequenza_artisti[artista]["playlist2"] for artista in artisti]
+
+        generi = list(frequenza_generi.keys())
+        frequenze_generi1 = [frequenza_generi[genere]["playlist1"] for genere in generi]
+        frequenze_generi2 = [frequenza_generi[genere]["playlist2"] for genere in generi]
 
     except Exception as e:
         flash(f"Errore nel recupero delle playlist: {e}")
@@ -208,5 +225,8 @@ def compare_playlists():
         media_popolarita2=media_popolarita2,
         artisti=json.dumps(artisti),
         frequenze_playlist1=json.dumps(frequenze_playlist1),
-        frequenze_playlist2=json.dumps(frequenze_playlist2)
+        frequenze_playlist2=json.dumps(frequenze_playlist2),
+        generi=json.dumps(generi),
+        frequenze_generi1=json.dumps(frequenze_generi1),
+        frequenze_generi2=json.dumps(frequenze_generi2)
     )
