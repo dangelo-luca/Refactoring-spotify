@@ -5,10 +5,9 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from models import db, Playlist
 from flask_login import login_required, current_user
 from Services.num import analyze_and_visualize
+import json
+
 home_bp = Blueprint('home', __name__)
-
-
-
 
 @home_bp.route("/home", methods=["GET", "POST"])
 @login_required
@@ -140,22 +139,24 @@ def compare_playlists():
 
     # Ottieni i dati delle due playlist
     sp = get_spotify_client()
-    user_info = None
     try:
-        user_info = sp.current_user()  # Recupera le informazioni dell'utente
         playlist1 = selected_playlists[0]
         playlist2 = selected_playlists[1]
 
         playlist1_data = sp.playlist(playlist1['id'])
         playlist2_data = sp.playlist(playlist2['id'])
 
-        # Estrai i brani dalle playlist
+        # Estrai i brani e gli artisti dalle playlist
         playlist1_tracks = [
-            {"name": track["track"].get("name", "Senza Nome"), "popularity": track["track"].get("popularity", 0)}
+            {"name": track["track"].get("name", "Senza Nome"),
+             "artist": track["track"]["artists"][0].get("name", "Sconosciuto"),
+             "popularity": track["track"].get("popularity", 0)}
             for track in playlist1_data['tracks']['items'] if track.get('track')
         ]
         playlist2_tracks = [
-            {"name": track["track"].get("name", "Senza Nome"), "popularity": track["track"].get("popularity", 0)}
+            {"name": track["track"].get("name", "Senza Nome"),
+             "artist": track["track"]["artists"][0].get("name", "Sconosciuto"),
+             "popularity": track["track"].get("popularity", 0)}
             for track in playlist2_data['tracks']['items'] if track.get('track')
         ]
 
@@ -171,6 +172,23 @@ def compare_playlists():
         media_popolarita1 = sum([t['popularity'] for t in playlist1_tracks]) / playlist1_total if playlist1_total > 0 else 0
         media_popolarita2 = sum([t['popularity'] for t in playlist2_tracks]) / playlist2_total if playlist2_total > 0 else 0
 
+        # Calcola gli artisti in comune e la loro frequenza
+        artisti_playlist1 = [t['artist'] for t in playlist1_tracks]
+        artisti_playlist2 = [t['artist'] for t in playlist2_tracks]
+        artisti_comuni = set(artisti_playlist1).intersection(set(artisti_playlist2))
+        frequenza_artisti = {
+            artista: {
+                "playlist1": artisti_playlist1.count(artista),
+                "playlist2": artisti_playlist2.count(artista)
+            }
+            for artista in artisti_comuni
+        }
+
+        # Prepara i dati per il grafico
+        artisti = list(frequenza_artisti.keys())
+        frequenze_playlist1 = [frequenza_artisti[artista]["playlist1"] for artista in artisti]
+        frequenze_playlist2 = [frequenza_artisti[artista]["playlist2"] for artista in artisti]
+
     except Exception as e:
         flash(f"Errore nel recupero delle playlist: {e}")
         return redirect(url_for('home.home'))
@@ -180,15 +198,15 @@ def compare_playlists():
 
     return render_template(
         'confronto.html',
-        user_info=user_info,
         playlist1_name=playlist1['name'],
         playlist2_name=playlist2['name'],
         playlist1_total=playlist1_total,
         playlist2_total=playlist2_total,
-        common_tracks=len(set([t['name'] for t in playlist1_tracks]).intersection(
-            set([t['name'] for t in playlist2_tracks])
-        )),
+        common_tracks=common_tracks,
         similarity_percentage=similarity_percentage,
         media_popolarita1=media_popolarita1,
-        media_popolarita2=media_popolarita2
+        media_popolarita2=media_popolarita2,
+        artisti=json.dumps(artisti),
+        frequenze_playlist1=json.dumps(frequenze_playlist1),
+        frequenze_playlist2=json.dumps(frequenze_playlist2)
     )

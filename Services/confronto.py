@@ -62,14 +62,22 @@ def carica_playlist(self, percorso_file):
         """
         try:
             with open(percorso_file, 'r') as file:
-                return [{"nome": line.strip(), "popolarita": int(line.strip()[-1]) * 10} for line in file.readlines()]
+                return [
+                    {
+                        "nome": line.split(" - ")[0].strip(),
+                        "artista": line.split(" - ")[1].strip(),
+                        "popolarita": int(line.split(" - ")[2].strip())
+                    }
+                    for line in file.readlines()
+                ]
         except FileNotFoundError:
             messagebox.showerror("Errore", f"Il file '{percorso_file}' non è stato trovato.")
             return []
 
 def confronta_playlist_logic(self, playlist1, playlist2):
         """
-        Confronta due playlist, identifica i brani comuni e calcola la percentuale di somiglianza.
+        Confronta due playlist, identifica i brani comuni, calcola la percentuale di somiglianza
+        e analizza gli artisti in comune.
         """
         set1 = set(playlist1)
         set2 = set(playlist2)
@@ -77,6 +85,19 @@ def confronta_playlist_logic(self, playlist1, playlist2):
 
         totale_minore = min(len(playlist1), len(playlist2))
         percentuale_somiglianza = (len(brani_comuni) / totale_minore) * 100 if totale_minore > 0 else 0
+
+        # Calcola la frequenza degli artisti in ciascuna playlist
+        artisti_playlist1 = [brano['artista'] for brano in playlist1 if 'artista' in brano]
+        artisti_playlist2 = [brano['artista'] for brano in playlist2 if 'artista' in brano]
+
+        artisti_comuni = set(artisti_playlist1).intersection(set(artisti_playlist2))
+        frequenza_artisti = {
+            artista: {
+                "playlist1": artisti_playlist1.count(artista),
+                "playlist2": artisti_playlist2.count(artista)
+            }
+            for artista in artisti_comuni
+        }
 
         popolarita_plapist1 = [brano['popolarita'] for brano in playlist1 if 'popolarita' in brano]
         popolarita_plapist2 = [brano['popolarita'] for brano in playlist2 if 'popolarita' in brano]
@@ -91,30 +112,47 @@ def confronta_playlist_logic(self, playlist1, playlist2):
             "totale_playlist2": len(playlist2),
             "totale_comuni": len(brani_comuni),
             "media_popolarita1": media_popolarita1,
-            "media_popolarita2": media_popolarita2    
+            "media_popolarita2": media_popolarita2,
+            "frequenza_artisti": frequenza_artisti
         }
 
 def genera_grafico(self, dati):
-
-        
+        """
+        Genera grafici per visualizzare i dati di confronto tra le playlist.
+        """
         labels = ['Playlist 1', 'Playlist 2', 'Brani Comuni']
         valori = [dati["totale_playlist1"], dati["totale_playlist2"], dati["totale_comuni"]]
 
-        plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(15, 7))
 
-        plt.subplot(1, 2, 1)
+        # Grafico 1: Numero di brani
+        plt.subplot(1, 3, 1)
         plt.bar(labels, valori, color=['blue', 'green', 'orange'])
         plt.title(f"Somiglianza tra Playlist ({dati['percentuale_somiglianza']:.2f}%)")
         plt.ylabel("Numero di Brani")
 
-        labels_popolarita = ['playlist 1', 'playlist 2']
+        # Grafico 2: Popolarità media
+        labels_popolarita = ['Playlist 1', 'Playlist 2']
         valori_popolarita = [dati["media_popolarita1"], dati["media_popolarita2"]]
-        plt.subplot(1, 2, 2)
+        plt.subplot(1, 3, 2)
         plt.bar(labels_popolarita, valori_popolarita, color=['blue', 'green'])
         plt.title("Popolarità Media")
-        
+
+        # Grafico 3: Artisti in comune
+        artisti = list(dati["frequenza_artisti"].keys())
+        frequenze_playlist1 = [dati["frequenza_artisti"][artista]["playlist1"] for artista in artisti]
+        frequenze_playlist2 = [dati["frequenza_artisti"][artista]["playlist2"] for artista in artisti]
+
+        x = range(len(artisti))
+        plt.subplot(1, 3, 3)
+        plt.bar(x, frequenze_playlist1, width=0.4, label='Playlist 1', color='blue', align='center')
+        plt.bar(x, frequenze_playlist2, width=0.4, label='Playlist 2', color='green', align='edge')
+        plt.xticks(x, artisti, rotation=45, ha='right')
+        plt.title("Artisti in Comune e Frequenza")
+        plt.ylabel("Frequenza")
+        plt.legend()
+
         plt.tight_layout()
         plt.show()
 
 
-    

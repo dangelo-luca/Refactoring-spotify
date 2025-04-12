@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confronto Playlist</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
 </head>
 <body>
-    {%extends'nav.html'%}
+    {% extends 'nav.html' %}
     {% block content %}
     <h1>Brani in Comune</h1>
 
@@ -20,9 +19,11 @@
         <p><strong>Percentuale di somiglianza:</strong> {{ similarity_percentage }}%</p>
     </div>
 
-    <!-- Div per il grafico -->
+    <!-- Div per il grafico dei brani -->
     <div id="confronto-grafico" style="width: 100%; height: 500px;"></div>
+    <div id="artisti-comuni-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
     <div id="popolarita-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
+
 
     <script>
         // Dati passati dal backend
@@ -34,7 +35,7 @@
         const mediaPopolarita1 = "{{ media_popolarita1 }}";
         const mediaPopolarita2 = "{{ media_popolarita2 }}";
 
-        // Dati per il grafico
+        // Dati per il grafico dei brani
         const dataBrani = [
             {
                 x: [playlist1Name, playlist2Name, "Brani in Comune"],
@@ -46,16 +47,17 @@
             }
         ];
 
-        // Layout del grafico
+        // Layout del grafico dei brani
         const layout = {
             title: 'Brani in Comune',
             xaxis: { title: 'Categorie' },
             yaxis: { title: 'Numero di Brani' }
         };
 
-        // Disegna il grafico
+        // Disegna il grafico dei brani
         Plotly.newPlot('confronto-grafico', dataBrani, layout);
 
+        // Dati per il grafico della popolarità media
         const dataPopolarita = [
             {
                 x: [playlist1Name, playlist2Name],
@@ -77,7 +79,41 @@
         // Disegna il grafico della popolarità media
         Plotly.newPlot('popolarita-grafico', dataPopolarita, layoutPopolarita);
     </script>
-    
+
+    <script>
+        // Dati per il grafico degli artisti in comune
+        const artisti = JSON.parse('{{ artisti | safe }}');
+        const frequenzePlaylist1 = JSON.parse('{{ frequenze_playlist1 | safe }}');
+        const frequenzePlaylist2 = JSON.parse('{{ frequenze_playlist2 | safe }}');
+
+        const dataArtisti = [
+            {
+                x: artisti,
+                y: frequenzePlaylist1,
+                name: 'Playlist 1',
+                type: 'bar',
+                marker: { color: 'blue' }
+            },
+            {
+                x: artisti,
+                y: frequenzePlaylist2,
+                name: 'Playlist 2',
+                type: 'bar',
+                marker: { color: 'green' }
+            }
+        ];
+
+        // Layout del grafico degli artisti in comune
+        const layoutArtisti = {
+            title: 'Artisti in Comune e Frequenza',
+            barmode: 'group',
+            xaxis: { title: 'Artisti' },
+            yaxis: { title: 'Frequenza' }
+        };
+
+        // Disegna il grafico degli artisti in comune
+        Plotly.newPlot('artisti-comuni-grafico', dataArtisti, layoutArtisti);
+    </script>
     {% endblock %}
 </body>
 </html>
