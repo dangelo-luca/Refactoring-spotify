@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='playlist.css') }}">
     <title>{{ playlist['name'] }}</title>
     <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-    <link rel="stylesheet" href="static/playlist.css">
+    <link rel="stylesheet" href="/static/playlist.css">
 </head>
+
 <body>
     {%extends'nav.html'%}
     {% block content %}

@@ -1,10 +1,13 @@
+/* Global Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
 }
 
+/* Playlist Container */
 .playlist-container {
     max-width: 800px;
     margin: 50px auto;
@@ -14,21 +17,24 @@ body {
     border-radius: 8px;
 }
 
+/* Headings */
 h1 {
-    color: #333;
-    font-size: 2em;
-    margin-bottom: 20px;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 2rem;
+    font-size: 2.5rem;
+    color: #111827; /* Darker gray */
+    margin-bottom: 20px;
 }
 
 h2 {
-    color: #555;
-    font-size: 1.5em;
+    margin-top: 20px;
+    text-align: center;
+    color: #444;
+    font-size: 2rem;
     margin-bottom: 10px;
-    margin-left: 20px;
 }
 
+/* Lists */
 ul {
     list-style-type: none;
     padding: 0;
@@ -45,44 +51,58 @@ li:nth-child(odd) {
     background-color: #d9d9d9;
 }
 
+/* Images */
 img {
     display: block;
-    margin: 0 auto 20px;
+    margin: 1rem auto;
     border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-p {
-    color: #777;
-    font-size: 1em;
-    text-align: center;
+.playlist-image {
+    width: 100%; /* L'immagine occupa tutta la larghezza del contenitore */
+    height: auto; /* Mantiene le proporzioni */
+    max-height: 150px; /* Altezza massima per uniformità */
+    object-fit: contain; /* Mostra tutta l'immagine senza tagliarla */
+    border-bottom: 1px solid #ddd;
+    background-color: #f4f4f4; /* Colore di sfondo per immagini non proporzionate */
 }
 
+/* Playlist Info */
+.playlist-info {
+    padding: 10px;
+}
 
-
-/* Main content styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
+.playlist-info h3 {
+    font-size: 16px;
+    margin: 10px 0;
     color: #333;
 }
 
-h1 {
-    text-align: center;
-    margin-top: 2rem;
-    font-size: 2.5rem;
-    color: #111827; /* Darker gray */
+.playlist-info p {
+    font-size: 14px;
+    color: #666;
 }
 
-h2 {
-    margin-top: 20px;
+/* Buttons */
+a.button, .add-favorite-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    margin: 1rem 0;
+    background-color: #3b82f6; /* Blue */
+    color: #ffffff; /* White */
     text-align: center;
-    color: #444;
-    font-size: 2rem;
+    border-radius: 0.375rem; /* Rounded corners */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-/* Table styles */
+a.button:hover, .add-favorite-btn:hover {
+    background-color: #2563eb; /* Darker blue */
+}
+
+/* Tables */
 table {
     width: 80%;
     margin: 2rem auto;
@@ -109,35 +129,13 @@ tr:hover td {
     background-color: #f9fafb; /* Very light gray */
 }
 
-/* Button styles */
-a.button {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    margin: 1rem 0;
-    background-color: #3b82f6; /* Blue */
-    color: #ffffff; /* White */
-    text-align: center;
-    border-radius: 0.375rem; /* Rounded corners */
-    transition: background-color 0.3s ease;
-}
-
-a.button:hover {
-    background-color: #2563eb; /* Darker blue */
-}
-
-/* Image styles */
-img {
-    display: block;
-    margin: 1rem auto;
-    border-radius: 0.375rem; /* Rounded corners */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
+/* Responsive Styles */
 .search-results, .saved-playlists {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Layout flessibile */
     gap: 20px;
     padding: 20px;
+    justify-content: center; /* Centra gli elementi se ce n'è solo uno */
 }
 
 .playlist-card {
@@ -150,41 +148,7 @@ img {
     padding: 10px;
 }
 
-.playlist-image {
-    width: 50%;
-    height: 150px; /* Altezza fissa per uniformità */
-    object-fit: fixed; /* Mantiene le proporzioni senza tagliare */
-    border-bottom: 1px solid #ddd;
+
+nav{
+    padding: 1rem;
 }
-
-.playlist-info {
-    padding: 10px;
-}
-
-.playlist-info h3 {
-    font-size: 16px;
-    margin: 10px 0;
-    color: #333;
-}
-
-.playlist-info p {
-    font-size: 14px;
-    color: #666;
-}
-
-.add-favorite-btn {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.add-favorite-btn:hover {
-    background-color: #0056b3;
-}
-
-
-/* Responsive styles */
