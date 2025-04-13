@@ -74,9 +74,10 @@ img {
 
 .search-results, .saved-playlists {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Layout flessibile */
     gap: 20px;
     padding: 20px;
+    justify-content: center; /* Centra gli elementi se ce n'è solo uno */
 }
 
 .playlist-card {
@@ -90,10 +91,12 @@ img {
 }
 
 .playlist-image {
-    width: 50%;
-    height: 150px; /* Altezza fissa per uniformità */
-    object-fit: fixed; /* Mantiene le proporzioni senza tagliare */
+    width: 100%; /* L'immagine occupa tutta la larghezza del contenitore */
+    height: auto; /* Mantiene le proporzioni */
+    max-height: 150px; /* Altezza massima per uniformità */
+    object-fit: contain; /* Mostra tutta l'immagine senza tagliarla */
     border-bottom: 1px solid #ddd;
+    background-color: #f4f4f4; /* Colore di sfondo per immagini non proporzionate */
 }
 
 .playlist-info {

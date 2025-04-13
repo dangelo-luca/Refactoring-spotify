@@ -23,9 +23,8 @@
     <div id="confronto-grafico" style="width: 100%; height: 500px;"></div>
     <div id="artisti-comuni-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
     <div id="popolarita-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
-     <div id="generi-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
-
-
+    <div id="generi-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
+    <div id="temporale-grafico" style="width: 100%; height: 500px; margin-top: 50px;"></div>
 
     <script>
         // Dati passati dal backend
@@ -150,6 +149,41 @@
 
         // Disegna il grafico dei generi musicali
         Plotly.newPlot('generi-grafico', dataGeneri, layoutGeneri);
+    </script>
+
+    <script>
+        // Dati per il grafico temporale
+        const allYears = JSON.parse('{{ all_years | safe }}');
+        const playlist1Frequencies = JSON.parse('{{ playlist1_frequencies | safe }}');
+        const playlist2Frequencies = JSON.parse('{{ playlist2_frequencies | safe }}');
+
+        const dataTemporale = [
+            {
+                x: allYears,
+                y: playlist1Frequencies,
+                name: 'Playlist 1',
+                type: 'bar',
+                marker: { color: 'blue' }
+            },
+            {
+                x: allYears,
+                y: playlist2Frequencies,
+                name: 'Playlist 2',
+                type: 'bar',
+                marker: { color: 'green' }
+            }
+        ];
+
+        // Layout del grafico temporale
+        const layoutTemporale = {
+            title: 'Distribuzione Temporale dei Brani',
+            barmode: 'group',
+            xaxis: { title: 'Anno' },
+            yaxis: { title: 'Numero di Brani' }
+        };
+
+        // Disegna il grafico temporale
+        Plotly.newPlot('temporale-grafico', dataTemporale, layoutTemporale);
     </script>
     {% endblock %}
 </body>

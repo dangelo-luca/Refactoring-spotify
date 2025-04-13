@@ -76,58 +76,80 @@ def carica_playlist(self, percorso_file):
         return []
 
 def confronta_playlist_logic(self, playlist1, playlist2):
-        """
-        Confronta due playlist, identifica i brani comuni, calcola la percentuale di somiglianza,
-        analizza gli artisti in comune e confronta i generi musicali.
-        """
-        set1 = set(playlist1)
-        set2 = set(playlist2)
-        brani_comuni = set1.intersection(set2)
+    """
+    Confronta due playlist, identifica i brani comuni, calcola la percentuale di somiglianza,
+    analizza gli artisti in comune, confronta i generi musicali e calcola la distribuzione temporale.
+    """
+    set1 = set(playlist1)
+    set2 = set(playlist2)
+    brani_comuni = set1.intersection(set2)
 
-        totale_minore = min(len(playlist1), len(playlist2))
-        percentuale_somiglianza = (len(brani_comuni) / totale_minore) * 100 if totale_minore > 0 else 0
+    totale_minore = min(len(playlist1), len(playlist2))
+    percentuale_somiglianza = (len(brani_comuni) / totale_minore) * 100 if totale_minore > 0 else 0
 
-        # Calcola la frequenza degli artisti in ciascuna playlist
-        artisti_playlist1 = [brano['artista'] for brano in playlist1 if 'artista' in brano]
-        artisti_playlist2 = [brano['artista'] for brano in playlist2 if 'artista' in brano]
+    # Calcola la frequenza degli artisti in ciascuna playlist
+    artisti_playlist1 = [brano['artista'] for brano in playlist1 if 'artista' in brano]
+    artisti_playlist2 = [brano['artista'] for brano in playlist2 if 'artista' in brano]
 
-        artisti_comuni = set(artisti_playlist1).intersection(set(artisti_playlist2))
-        frequenza_artisti = {
-            artista: {
-                "playlist1": artisti_playlist1.count(artista),
-                "playlist2": artisti_playlist2.count(artista)
-            }
-            for artista in artisti_comuni
+    artisti_comuni = set(artisti_playlist1).intersection(set(artisti_playlist2))
+    frequenza_artisti = {
+        artista: {
+            "playlist1": artisti_playlist1.count(artista),
+            "playlist2": artisti_playlist2.count(artista)
+        }
+        for artista in artisti_comuni
+    }
+
+    # Calcola la frequenza dei generi musicali
+    generi_playlist1 = [brano.get('genere', 'Sconosciuto') for brano in playlist1 if 'genere' in brano]
+    generi_playlist2 = [brano.get('genere', 'Sconosciuto') for brano in playlist2 if 'genere' in brano]
+
+    frequenza_generi = {}
+    for genere in set(generi_playlist1 + generi_playlist2):
+        frequenza_generi[genere] = {
+            "playlist1": generi_playlist1.count(genere),
+            "playlist2": generi_playlist2.count(genere)
         }
 
-        # Calcola la frequenza dei generi musicali
-        generi_playlist1 = [brano.get('genere', 'Sconosciuto') for brano in playlist1 if 'genere' in brano]
-        generi_playlist2 = [brano.get('genere', 'Sconosciuto') for brano in playlist2 if 'genere' in brano]
+    # Calcola la distribuzione temporale dei brani
+    def group_by_year(playlist):
+        years = [brano.get('release_date', '1900') for brano in playlist if 'release_date' in brano]
+        year_counts = {}
+        for year in years:
+            if year in year_counts:
+                year_counts[year] += 1
+            else:
+                year_counts[year] = 1
+        return year_counts
 
-        frequenza_generi = {}
-        for genere in set(generi_playlist1 + generi_playlist2):
-            frequenza_generi[genere] = {
-                "playlist1": generi_playlist1.count(genere),
-                "playlist2": generi_playlist2.count(genere)
-            }
+    distribuzione_temporale1 = group_by_year(playlist1)
+    distribuzione_temporale2 = group_by_year(playlist2)
 
-        popolarita_plapist1 = [brano['popolarita'] for brano in playlist1 if 'popolarita' in brano]
-        popolarita_plapist2 = [brano['popolarita'] for brano in playlist2 if 'popolarita' in brano]
+    # Unisci gli anni per entrambe le playlist
+    anni = sorted(set(distribuzione_temporale1.keys()).union(set(distribuzione_temporale2.keys())))
+    frequenze_anni1 = [distribuzione_temporale1.get(anno, 0) for anno in anni]
+    frequenze_anni2 = [distribuzione_temporale2.get(anno, 0) for anno in anni]
 
-        media_popolarita1 = sum(popolarita_plapist1) / len(popolarita_plapist1) if popolarita_plapist1 else 0
-        media_popolarita2 = sum(popolarita_plapist2) / len(popolarita_plapist2) if popolarita_plapist2 else 0
+    popolarita_plapist1 = [brano['popolarita'] for brano in playlist1 if 'popolarita' in brano]
+    popolarita_plapist2 = [brano['popolarita'] for brano in playlist2 if 'popolarita' in brano]
 
-        return {
-            "brani_comuni": list(brani_comuni),
-            "percentuale_somiglianza": percentuale_somiglianza,
-            "totale_playlist1": len(playlist1),
-            "totale_playlist2": len(playlist2),
-            "totale_comuni": len(brani_comuni),
-            "media_popolarita1": media_popolarita1,
-            "media_popolarita2": media_popolarita2,
-            "frequenza_artisti": frequenza_artisti,
-            "frequenza_generi": frequenza_generi
-        }
+    media_popolarita1 = sum(popolarita_plapist1) / len(popolarita_plapist1) if popolarita_plapist1 else 0
+    media_popolarita2 = sum(popolarita_plapist2) / len(popolarita_plapist2) if popolarita_plapist2 else 0
+
+    return {
+        "brani_comuni": list(brani_comuni),
+        "percentuale_somiglianza": percentuale_somiglianza,
+        "totale_playlist1": len(playlist1),
+        "totale_playlist2": len(playlist2),
+        "totale_comuni": len(brani_comuni),
+        "media_popolarita1": media_popolarita1,
+        "media_popolarita2": media_popolarita2,
+        "frequenza_artisti": frequenza_artisti,
+        "frequenza_generi": frequenza_generi,
+        "anni": anni,
+        "frequenze_anni1": frequenze_anni1,
+        "frequenze_anni2": frequenze_anni2
+    }
 
 def genera_grafico(self, dati):
     """
@@ -136,10 +158,10 @@ def genera_grafico(self, dati):
     labels = ['Playlist 1', 'Playlist 2', 'Brani Comuni']
     valori = [dati["totale_playlist1"], dati["totale_playlist2"], dati["totale_comuni"]]
 
-    plt.figure(figsize=(15, 10))
+    plt.figure(figsize=(15, 12))
 
     # Grafico 1: Numero di brani
-    plt.subplot(2, 2, 1)
+    plt.subplot(2, 3, 1)
     plt.bar(labels, valori, color=['blue', 'green', 'orange'])
     plt.title(f"Somiglianza tra Playlist ({dati['percentuale_somiglianza']:.2f}%)")
     plt.ylabel("Numero di Brani")
@@ -147,7 +169,7 @@ def genera_grafico(self, dati):
     # Grafico 2: Popolarità media
     labels_popolarita = ['Playlist 1', 'Playlist 2']
     valori_popolarita = [dati["media_popolarita1"], dati["media_popolarita2"]]
-    plt.subplot(2, 2, 2)
+    plt.subplot(2, 3, 2)
     plt.bar(labels_popolarita, valori_popolarita, color=['blue', 'green'])
     plt.title("Popolarità Media")
 
@@ -157,7 +179,7 @@ def genera_grafico(self, dati):
     frequenze_playlist2 = [dati["frequenza_artisti"][artista]["playlist2"] for artista in artisti]
 
     x = range(len(artisti))
-    plt.subplot(2, 2, 3)
+    plt.subplot(2, 3, 3)
     plt.bar(x, frequenze_playlist1, width=0.4, label='Playlist 1', color='blue', align='center')
     plt.bar(x, frequenze_playlist2, width=0.4, label='Playlist 2', color='green', align='edge')
     plt.xticks(x, artisti, rotation=45, ha='right')
@@ -171,12 +193,26 @@ def genera_grafico(self, dati):
     frequenze_generi2 = [dati["frequenza_generi"][genere]["playlist2"] for genere in generi]
 
     x = range(len(generi))
-    plt.subplot(2, 2, 4)
+    plt.subplot(2, 3, 4)
     plt.bar(x, frequenze_generi1, width=0.4, label='Playlist 1', color='blue', align='center')
     plt.bar(x, frequenze_generi2, width=0.4, label='Playlist 2', color='green', align='edge')
     plt.xticks(x, generi, rotation=45, ha='right')
     plt.title("Distribuzione dei Generi Musicali")
     plt.ylabel("Frequenza")
+    plt.legend()
+
+    # Grafico 5: Distribuzione temporale
+    anni = dati["anni"]
+    frequenze_anni1 = dati["frequenze_anni1"]
+    frequenze_anni2 = dati["frequenze_anni2"]
+
+    x = range(len(anni))
+    plt.subplot(2, 3, 5)
+    plt.bar(x, frequenze_anni1, width=0.4, label='Playlist 1', color='blue', align='center')
+    plt.bar(x, frequenze_anni2, width=0.4, label='Playlist 2', color='green', align='edge')
+    plt.xticks(x, anni, rotation=45, ha='right')
+    plt.title("Distribuzione Temporale dei Brani")
+    plt.ylabel("Numero di Brani")
     plt.legend()
 
     plt.tight_layout()

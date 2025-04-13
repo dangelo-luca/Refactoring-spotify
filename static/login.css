@@ -1,12 +1,13 @@
 /* Stile generale */
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #1f2937, #3b82f6);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0;
+
 }
 
 /* Card di login */
@@ -36,14 +37,14 @@ input[type="password"] {
 }
 
 input:focus {
-    border-color: #667eea;
+    border-color: #1f2937;
     outline: none;
 }
 
 button {
     width: 100%;
     padding: 10px;
-    background: #667eea;
+    background: #3b82f6;
     color: white;
     border: none;
     border-radius: 5px;
@@ -52,7 +53,7 @@ button {
 }
 
 button:hover {
-    background: #5a67d8;
+    background: #297fe2;
 }
 
 /* Link di registrazione */

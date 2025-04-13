@@ -146,23 +146,24 @@ def compare_playlists():
         playlist1_data = sp.playlist(playlist1['id'])
         playlist2_data = sp.playlist(playlist2['id'])
 
-        # Estrai i brani e gli artisti dalle playlist
+        # Estrai i brani e le date di pubblicazione dalle playlist
         playlist1_tracks = [
             {"name": track["track"].get("name", "Senza Nome"),
              "artist": track["track"]["artists"][0].get("name", "Sconosciuto"),
              "popularity": track["track"].get("popularity", 0),
-             "genres": sp.artist(track["track"]["artists"][0]["id"]).get("genres", [])}
+             "genres": sp.artist(track["track"]["artists"][0]["id"]).get("genres", []),
+             "release_date": track["track"]["album"].get("release_date", "1900").split("-")[0]}
             for track in playlist1_data['tracks']['items'] if track.get('track')
         ]
         playlist2_tracks = [
             {"name": track["track"].get("name", "Senza Nome"),
              "artist": track["track"]["artists"][0].get("name", "Sconosciuto"),
              "popularity": track["track"].get("popularity", 0),
-             "genres": sp.artist(track["track"]["artists"][0]["id"]).get("genres", [])}
+             "genres": sp.artist(track["track"]["artists"][0]["id"]).get("genres", []),
+             "release_date": track["track"]["album"].get("release_date", "1900").split("-")[0]}
             for track in playlist2_data['tracks']['items'] if track.get('track')
         ]
 
-        # Calcola i dati reali
         playlist1_total = len(playlist1_tracks)
         playlist2_total = len(playlist2_tracks)
         common_tracks = len(set([t['name'] for t in playlist1_tracks]).intersection(
@@ -206,6 +207,26 @@ def compare_playlists():
         frequenze_generi1 = [frequenza_generi[genere]["playlist1"] for genere in generi]
         frequenze_generi2 = [frequenza_generi[genere]["playlist2"] for genere in generi]
 
+
+        # Raggruppa le date di pubblicazione per anno
+        def group_by_year(tracks):
+            years = [track["release_date"] for track in tracks]
+            year_counts = {}
+            for year in years:
+                if year in year_counts:
+                    year_counts[year] += 1
+                else:
+                    year_counts[year] = 1
+            return year_counts
+
+        playlist1_years = group_by_year(playlist1_tracks)
+        playlist2_years = group_by_year(playlist2_tracks)
+
+        # Prepara i dati per il grafico temporale
+        all_years = sorted(set(playlist1_years.keys()).union(set(playlist2_years.keys())))
+        playlist1_frequencies = [playlist1_years.get(year, 0) for year in all_years]
+        playlist2_frequencies = [playlist2_years.get(year, 0) for year in all_years]
+
     except Exception as e:
         flash(f"Errore nel recupero delle playlist: {e}")
         return redirect(url_for('home.home'))
@@ -214,19 +235,22 @@ def compare_playlists():
     session['selected_playlists'] = []
 
     return render_template(
-        'confronto.html',
-        playlist1_name=playlist1['name'],
-        playlist2_name=playlist2['name'],
-        playlist1_total=playlist1_total,
-        playlist2_total=playlist2_total,
-        common_tracks=common_tracks,
-        similarity_percentage=similarity_percentage,
-        media_popolarita1=media_popolarita1,
-        media_popolarita2=media_popolarita2,
-        artisti=json.dumps(artisti),
-        frequenze_playlist1=json.dumps(frequenze_playlist1),
-        frequenze_playlist2=json.dumps(frequenze_playlist2),
-        generi=json.dumps(generi),
-        frequenze_generi1=json.dumps(frequenze_generi1),
-        frequenze_generi2=json.dumps(frequenze_generi2)
-    )
+    'confronto.html',
+    playlist1_name=playlist1['name'],
+    playlist2_name=playlist2['name'],
+    playlist1_total=playlist1_total,
+    playlist2_total=playlist2_total,
+    common_tracks=common_tracks,
+    similarity_percentage=similarity_percentage,
+    media_popolarita1=media_popolarita1,
+    media_popolarita2=media_popolarita2,
+    artisti=json.dumps(artisti),
+    frequenze_playlist1=json.dumps(frequenze_playlist1),
+    frequenze_playlist2=json.dumps(frequenze_playlist2),
+    generi=json.dumps(generi),
+    frequenze_generi1=json.dumps(frequenze_generi1),
+    frequenze_generi2=json.dumps(frequenze_generi2),  # Virgola aggiunta qui
+    all_years=json.dumps(all_years),
+    playlist1_frequencies=json.dumps(playlist1_frequencies),
+    playlist2_frequencies=json.dumps(playlist2_frequencies)
+)
