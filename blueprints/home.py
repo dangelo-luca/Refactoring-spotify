@@ -17,7 +17,16 @@ def home():
     if session.get("token_info"):
         try:
             user_info = sp.current_user()
-            playlists = sp.current_user_playlists()["items"]
+            playlists = [
+                {
+                    "id": playlist["id"],
+                    "name": playlist.get("name", "Senza Nome"),
+                    "tracks": playlist.get("tracks", {}),
+                    "images": playlist.get("images", []),
+                    "url": playlist["external_urls"]["spotify"]  # Assicurati che il link Spotify sia incluso
+                }
+                for playlist in sp.current_user_playlists()["items"]
+            ]
         except Exception:
             pass  
     search_results = []
@@ -38,13 +47,14 @@ def home():
             playlist_owner = request.form.get("playlist_owner")
             playlist_image = request.form.get("playlist_image")
             # Salva solo la playlist selezionata nel database per l'utente autenticato
-            if not Playlist.query.filter_by(id=playlist_id, user_id=current_user.id).first():  # Evita duplicati per utente
+            if not Playlist.query.filter_by(id=playlist_id, user_id=current_user.id).first():
                 new_playlist = Playlist(
                     id=playlist_id,
                     name=playlist_name,
                     owner=playlist_owner,
                     image=playlist_image,
-                    user_id=current_user.id  # Associa la playlist all'utente autenticato
+                    url=request.form.get("playlist_url"),  # Assicurati che questo valore venga passato
+                    user_id=current_user.id
                 )
                 db.session.add(new_playlist)
                 db.session.commit()
@@ -59,7 +69,8 @@ def home():
                             "id": playlist["id"],
                             "name": playlist.get("name", "Senza Nome"),
                             "owner": playlist["owner"].get("display_name", "Sconosciuto"),
-                            "image": playlist["images"][0]["url"] if playlist.get("images") else None
+                            "image": playlist["images"][0]["url"] if playlist.get("images") else None,
+                            "url": playlist["external_urls"]["spotify"]  # Link Spotify
                         }
                         for playlist in results.get("playlists", {}).get("items", [])
                         if playlist

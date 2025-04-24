@@ -15,6 +15,7 @@ class Playlist(db.Model):
     name = db.Column(db.String(100), nullable=False)
     owner = db.Column(db.String(100), nullable=False)
     image = db.Column(db.String(200), nullable=True)
+    url = db.Column(db.String, nullable=False, default="https://open.spotify.com")  # Valore predefinito
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Associa la playlist a un utente
 
 

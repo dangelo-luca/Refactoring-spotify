@@ -23,6 +23,7 @@
                       <div class="playlist-info">
                           <h3>{{ playlist['name'] }}</h3>
                           <p>Creato da: {{ playlist['owner'] }}</p>
+                          <p>URL: {{ playlist.url }}</p>
                       </div>
                   </a>
                   <form method="POST" action="{{ url_for('home.home') }}">
@@ -30,6 +31,7 @@
                       <input type="hidden" name="playlist_name" value="{{ playlist['name'] }}">
                       <input type="hidden" name="playlist_owner" value="{{ playlist['owner'] }}">
                       <input type="hidden" name="playlist_image" value="{{ playlist['image'] }}">
+                      <input type="hidden" name="playlist_url" value="{{ playlist['url'] }}">
                       <button type="submit" class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Aggiungi ai Preferiti</button>
                       <br>
                       <br>
@@ -44,9 +46,22 @@
                         Confronta Playlist
                     </button>
                 </form>
+                <br>
+                <button class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" onclick="copyToClipboard('{{ playlist.url }}')">Condividi</button>
+                <a class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" href="{{ playlist.url }}" target="_blank">Apri su Spotify</a>
               </div>
           {% endfor %}
       </div>
+
+      <script>
+          function copyToClipboard(text) {
+              navigator.clipboard.writeText(text).then(function() {
+                  alert("Link copiato negli appunti!");
+              }, function(err) {
+                  alert("Errore durante la copia del link: " + err);
+              });
+          }
+      </script>
   {% endif %}
       
 
@@ -89,8 +104,20 @@
                                 Confronta Playlist
                             </button>
                         </form>
+                        <br>
+                        <button class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" onclick="copyToClipboard('{{ playlist.url }}')">Condividi</button>
+                <a class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" href="{{ playlist.url }}" target="_blank">Apri su Spotify</a>
                     </td>
                 </tr>
+                <script>
+                    function copyToClipboard(text) {
+                        navigator.clipboard.writeText(text).then(function() {
+                            alert("Link copiato negli appunti!");
+                        }, function(err) {
+                            alert("Errore durante la copia del link: " + err);
+                        });
+                    }
+                </script>
             {% endfor %}
         </tbody>
     </table>
@@ -106,19 +133,31 @@
             <div class="playlist-info">
                 <h3>{{ playlist.name }}</h3>
                 <p>Creato da: {{ playlist.owner }}</p>
-                <a href="/playlist/{{playlist['id'] }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
+                <a href="/playlist/{{playlist.id }}" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">Visualizza Canzoni</a>
                 <br>
                 <br>
                 <form method="POST" action="{{ url_for('home.select_playlist') }}">
-                    <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
-                    <input type="hidden" name="playlist_name" value="{{ playlist['name'] }}">
+                    <input type="hidden" name="playlist_id" value="{{ playlist.id }}">
+                    <input type="hidden" name="playlist_name" value="{{ playlist.name }}">
                     <input type="hidden" name="next" value="{{ request.path }}">
                     <button type="submit" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white">
                         Confronta Playlist
                     </button>
                 </form>
+                <br>
+                <button class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" onclick="copyToClipboard('{{ playlist.url }}')">Condividi</button>
+                <a class="add-favorite-btn rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" href="{{ playlist.url }}" target="_blank">Apri su Spotify</a>
             </div>
         </div>
+        <script>
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(function() {
+                    alert("Link copiato negli appunti!");
+                }, function(err) {
+                    alert("Errore durante la copia del link: " + err);
+                });
+            }
+        </script>
     {% endfor %}
 </div>
 {% endblock %}
