@@ -29,6 +29,9 @@
                 <li>{{ track['name'] }} - {{ track['artists'][0]['name'] }}</li>
             {% endfor %}
         </ul>
+        {% else %}
+        <p>Nessuna traccia consigliata trovata.</p>
+
     {% endif %}
 </div>
 {% endblock %}
