@@ -1,0 +1,34 @@
+{% extends 'nav.html' %}
+{% block content %}
+<div class="container">
+    <h1>Ottieni Raccomandazioni Spotify</h1>
+
+    <form method="POST">
+        <label>Artisti (ID separati da virgola):</label><br>
+        <input type="text" name="seed_artists" placeholder="Es: artista1,artista2"><br><br>
+
+        <label>Generi (separati da virgola):</label><br>
+        <input type="text" name="seed_genres" placeholder="Es: pop,rock"><br><br>
+
+        <label>Tracce (ID separati da virgola):</label><br>
+        <input type="text" name="seed_tracks" placeholder="Es: track1,track2"><br><br>
+
+        <label>Salva direttamente in playlist?</label><br>
+        <select name="save">
+            <option value="no">No</option>
+            <option value="yes">Sì</option>
+        </select><br><br>
+
+        <button type="submit">Ottieni Suggerimenti</button>
+    </form>
+
+    {% if tracks %}
+        <h2>Brani Consigliati:</h2>
+        <ul>
+            {% for track in tracks %}
+                <li>{{ track['name'] }} - {{ track['artists'][0]['name'] }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

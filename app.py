@@ -6,6 +6,10 @@ from blueprints.artisti import artisti_bp
 from blueprints.auth import auth_bp
 from models import db
 import sqlite3
+from blueprints.recommendations import recommendations_bp
+
+
+
 
 app = Flask(__name__)
 
@@ -24,6 +28,8 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(home_bp)
 app.register_blueprint(artisti_bp)
+app.register_blueprint(recommendations_bp)
+
 
 
 if __name__ == "__main__":
